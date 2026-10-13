@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitclub Gym • RFID Kiosk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background: #FFFFFF; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; overflow: hidden; }
+        .login-card { width: 100%; max-width: 400px; border: 1px solid #dee2e6; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .login-header { background: #C0C0C0; padding: 2rem; text-align: center; border-bottom: 3px solid #FFD700; }
+        .login-body { padding: 2rem; background: #fff; text-align: center; }
+        .rfid-icon { font-size: 5rem; color: #FFD700; margin-bottom: 1rem; transition: transform 0.3s; }
+        .rfid-icon.scanning { animation: pulse 1s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .rfid-input-field { text-align: center; font-family: monospace; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        .btn-primary { background: #000; border: none; color: #FFD700; font-weight: bold; padding: 0.75rem; width: 100%; }
+        .btn-primary:hover { background: #222; color: #FFD700; }
+        .btn-link { color: #000; text-decoration: none; font-size: 0.9rem; }
+        .btn-link:hover { color: #555; text-decoration: underline; }
+        #statusMessage { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; min-width: 320px; display: none; }
+    </style>
+</head>
+<body>
+    <div id="statusMessage" class="alert alert-dismissible fade show" role="alert">
+        <span id="messageContent"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h3 class="mb-0"><i class="bi bi-broadcast me-2"></i>RFID Kiosk</h3>
+            <small class="text-dark">Scan to Check-In or Check-Out</small>
+        </div>
+        <div class="login-body">
+            <div class="rfid-icon" id="rfidIcon">
+                <i class="bi bi-upc-scan"></i>
+            </div>
+            <p class="mb-3 text-muted" id="instructionText">Scan your RFID card or enter UID</p>
+
+            <form id="rfidForm">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="rfid" id="rfidInput" class="form-control rfid-input-field" 
+                               placeholder="XXXXXXXX" autofocus autocomplete="off" required>
+                        <button type="button" id="kioskUsbBtn" class="btn btn-outline-dark" title="Connect USB RFID Reader">
+                            <i class="bi bi-usb-symbol"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn">SUBMIT</button>
+            </form>
+
+            <div class="mt-4">
+                <a href="Login.html" class="btn-link">Staff Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/rfidlogin.js?v=2"></script>
+</body>
+</html>

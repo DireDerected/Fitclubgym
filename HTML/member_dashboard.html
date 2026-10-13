@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitclub Gym • Member Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<style>
+:root {
+    --primary-yellow: #FFD700;
+    --sidebar-black: #111111;
+    --header-gray: #F5F5F5;
+    --text-dark: #333333;
+    --border-light: #EEEEEE;
+}
+
+body {
+    background: #FFFFFF;
+    color: var(--text-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Navbar Redesign */
+.navbar {
+    background: var(--header-gray);
+    height: 70px;
+    padding: 0 2rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+    border-bottom: 3px solid var(--primary-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #000 !important;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: #000;
+    border: 2px solid var(--primary-yellow);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+}
+
+/* Sidebar Redesign */
+.sidebar {
+    background: var(--sidebar-black);
+    width: 260px;
+    height: calc(100vh - 70px);
+    position: fixed;
+    left: 0;
+    top: 70px;
+    z-index: 1040;
+    padding: 1.5rem 0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    color: var(--primary-yellow);
+    padding: 0.9rem 1.5rem;
+    margin: 0.4rem 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.2rem;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--primary-yellow);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    background: var(--primary-yellow);
+    color: #000;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Custom Confirmation Modal Design */
+#confirmModal .modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+}
+
+#confirmModal .modal-header {
+    border: none !important;
+    padding: 1.5rem 1.5rem 0 !important;
+}
+
+#confirmModal .modal-body {
+    padding: 2rem 1.5rem !important;
+}
+
+#confirmModal .modal-footer {
+    border: none !important;
+    padding: 0 1.5rem 2rem !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+}
+
+#confirmModal .btn-lg {
+    padding: 0.7rem 2rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+#confirmModal .btn-outline-secondary {
+    border: 2px solid #EEE !important;
+    color: #666 !important;
+    background: #FFF !important;
+}
+
+#confirmModal #confirmModalConfirm {
+    background: #000 !important;
+    color: #FFD700 !important;
+    border: none !important;
+}
+
+#confirmModal #confirmModalConfirm:hover {
+    background: #222 !important;
+}
+
+.sidebar .nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    padding: 100px 2.5rem 3rem;
+    min-height: 100vh;
+}
+
+/* Cards & Layout */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card {
+    background: #fff;
+    padding: 2rem;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    margin-bottom: 2rem;
+}
+
+/* Table Styling */
+.table-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+.table { margin-bottom: 0; }
+.table th {
+    background: #F9F9F9;
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #777;
+    border-bottom: 2px solid #EEE;
+}
+
+.table td {
+    padding: 1.2rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+/* User Profile Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #EAEAEA;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.user-profile:hover {
+    background: #DDD;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #000;
+    color: var(--primary-yellow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.btn-primary {
+    background: #000;
+    color: var(--primary-yellow);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background: #222;
+    color: var(--primary-yellow);
+}
+
+/* Calendar Styles */
+.fc-day-present { background-color: #E8F5E9 !important; }
+.fc-day-absent { background-color: #FFEBEE !important; }
+.fc-day-not-available { background-color: #F5F5F5 !important; }
+.fc-day-available { background-color: #E8F5E9 !important; }
+.fc-day-unavailable { background-color: #FFEBEE !important; }
+
+/* FullCalendar theme overrides (match coach dashboard) */
+.fc .fc-toolbar-title { font-weight: 700; font-size: 1.5rem; color: #000; }
+.fc .fc-button {
+    background: #000 !important;
+    color: #FFD700 !important;
+    border: 1px solid #FFD700 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.4rem 0.9rem !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+}
+.fc .fc-button:hover { background: #1a1a1a !important; color: #FFD700 !important; }
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+    background: #FFD700 !important; color: #000 !important; border-color: #FFD700 !important;
+}
+.fc .fc-button-group > .fc-button { border-radius: 8px !important; margin: 0 0 0 0.25rem !important; }
+.fc .fc-button-group > .fc-button:first-child { margin-left: 0; }
+
+/* Event text labels (Available / Unavailable) */
+.fc .fc-event {
+    border-radius: 4px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    padding: 2px 4px !important;
+    border: 1px solid !important;
+}
+.fc .fc-event-title { color: inherit !important; }
+
+/* Today highlight - gold tint with gold border */
+.fc .fc-day-today {
+    background-color: rgba(255, 215, 0, 0.15) !important;
+    box-shadow: inset 0 0 0 2px #FFD700;
+}
+
+/* Plain dark weekday headers & day numbers (no blue underline) */
+.fc .fc-col-header-cell-cushion,
+.fc .fc-col-header-cell-cushion a,
+.fc .fc-daygrid-day-number,
+.fc .fc-daygrid-day-number a {
+    color: #000 !important;
+    font-weight: 700;
+    text-decoration: none !important;
+}
+.fc .fc-daygrid-day-number { font-weight: 600; }
+
+/* Tighter cells & light borders */
+.fc .fc-daygrid-day { padding: 2px; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: #EEE !important; }
+
+/* Tab Transitions */
+.tab-pane {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="navbar-brand">
+        <img src="../Fitclubgymicon.png" alt="Fitclub Gym Logo" onerror="this.style.display='none';">
+        Fitclub Gym • <span id="userRole">Member</span>
+    </span>
+    <div class="d-flex align-items-center gap-4">
+        <span id="clock"></span>
+        
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-link position-relative p-0 text-dark" data-bs-toggle="dropdown">
+                <i class="bi bi-bell fs-4"></i>
+                <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                    0
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 overflow-hidden" id="notifList" style="width: 350px; max-height: 500px; overflow-y: auto;">
+                <li class="dropdown-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-uppercase small">Notifications</span>
+                    <button class="btn btn-sm btn-link text-primary p-0 text-decoration-none small" onclick="markAllAsRead(event)">Mark all as read</button>
+                </li>
+                <div id="notifItemsContainer">
+                    <li class="p-4 text-center text-muted small">No new notifications</li>
+                </div>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown">
+                <div class="user-avatar" id="userInitials">JD</div>
+                <div class="d-none d-md-block">
+                    <div style="font-size: 0.85rem; font-weight: 700; line-height: 1;" id="userName">John Doe</div>
+                    <div style="font-size: 0.7rem; color: #666;" id="userRoleBadge">Member</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="sidebar">
+    <div class="nav flex-column">
+        <a class="nav-link active" data-bs-toggle="tab" href="#dashboard">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#training">
+            <i class="bi bi-calendar3"></i> Trainer
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#workout">
+            <i class="bi bi-clipboard-pulse"></i> Workout
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#support">
+            <i class="bi bi-shield-exclamation"></i> Support
+        </a>
+        <a class="nav-link mt-auto" data-bs-toggle="tab" href="#settings">
+            <i class="bi bi-gear"></i> Settings
+        </a>
+    </div>
+</div>
+
+<main class="main-content">
+    <div id="alertContainer"></div>
+    <div class="tab-content">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade show active" id="dashboard">
+            <h2 class="section-title"><i class="bi bi-speedometer2"></i> Dashboard Overview</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <h5 class="fw-bold mb-4">Attendance Tracker</h5>
+                        <div id='calendar'></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <h5 class="fw-bold mb-4">Membership Status</h5>
+                        <div id="subStatus"></div>
+                    </div>
+                    <div class="card mt-4">
+                        <h5 class="fw-bold mb-4">Workout for <span id="todayWorkoutTitle">Today</span></h5>
+                        <div id="todayWorkoutList" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Tab -->
+        <div class="tab-pane fade" id="training">
+            <h2 class="section-title"><i class="bi bi-calendar3"></i> Training Programs</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <h5 class="fw-bold mb-4">Find a Coach</h5>
+                        <div id="coachList" class="list-group list-group-flush mt-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <h5 class="fw-bold mb-4">My Coaching</h5>
+                        <div id="myCoaching"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Tab -->
+        <div class="tab-pane fade" id="workout">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0"><i class="bi bi-clipboard-pulse"></i> Workout Routines</h2>
+                <button class="btn btn-primary" onclick="showRoutineModal()">
+                    <i class="bi bi-plus-lg me-2"></i>New Routine
+                </button>
+            </div>
+            <div id="routineList" class="row mt-2"></div>
+        </div>
+
+        <!-- Support Tab -->
+        <div class="tab-pane fade" id="support">
+            <h2 class="section-title"><i class="bi bi-shield-exclamation"></i> Support & Reports</h2>
+            <div class="card mb-5">
+                <h5 class="fw-bold mb-4">Submit a New Report</h5>
+                <form id="reportForm" class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Category</label>
+                        <select id="repCat" class="form-select form-select-lg">
+                            <option>Technical</option>
+                            <option>Billing</option>
+                            <option>Coach</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Issue Details</label>
+                        <textarea id="repIssue" class="form-control form-control-lg" rows="4" placeholder="Describe the problem..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary px-5">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+
+            <h4 class="mb-4 fw-bold">My Report History</h4>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Issue</th>
+                                <th>Status</th>
+                                <th>Date Submitted</th>
+                                <th>Resolution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settings">
+            <h2 class="section-title"><i class="bi bi-gear-fill"></i> Account Settings</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="attendance-card text-center p-5">
+                        <div class="mb-4">
+                            <div class="user-avatar mx-auto" id="settingsAvatar" style="width: 150px; height: 150px; font-size: 4rem;">JD</div>
+                        </div>
+                        <label for="profileUpload" class="btn btn-outline-dark w-100 mb-2">
+                            <i class="bi bi-upload me-2"></i>Change Photo
+                        </label>
+                        <input type="file" id="profileUpload" class="d-none" accept="image/*">
+                        <p class="text-muted small">JPG, PNG or GIF. Max 2MB.</p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="attendance-card">
+                        <h5 class="fw-bold mb-4">Personal Information</h5>
+                        <form id="settingsForm">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Full Name</label>
+                                    <input type="text" id="setName" class="form-control form-control-lg" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Username</label>
+                                    <input type="text" id="setUserName" class="form-control form-control-lg" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Gender</label>
+                                    <select id="setGender" class="form-select form-select-lg">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Rather not say">Rather not say</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Email Address</label>
+                                    <input type="email" id="setEmail" class="form-control form-control-lg" placeholder="email@example.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Phone Number</label>
+                                    <input type="tel" id="setPhone" class="form-control form-control-lg" placeholder="09XX XXX XXXX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Home Address (Optional)</label>
+                                    <input type="text" id="setAddress" class="form-control form-control-lg" placeholder="Street, City, Province">
+                                </div>
+                                <div class="col-12" id="medicalField" style="display:none;">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Medical Condition</label>
+                                    <textarea id="setMedical" class="form-control form-control-lg" rows="3" placeholder="List any medical conditions for your coach..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-checkin px-5 mt-3">
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="confirmModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div id="confirmModalIcon" class="mb-3" style="font-size: 3rem;"></div>
+                    <p id="confirmModalMessage" class="mb-0 text-muted" style="font-size: 1.1rem;"></p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center gap-3">
+                    <button type="button" class="btn btn-lg btn-outline-secondary px-5" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                    <button type="button" id="confirmModalConfirm" class="btn btn-lg px-5" style="border-radius: 10px; background: #000; color: #FFD700;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Routine Modal -->
+<div class="modal fade" id="routineModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="routineForm" class="modal-content border-0 shadow rounded-4 overflow-hidden">
+      <div class="modal-header bg-dark py-3">
+        <h5 class="modal-title text-white fw-bold">Create New Routine</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase text-muted">Routine Name</label>
+            <input required id="routName" class="form-control form-control-lg" placeholder="e.g. Leg Day">
+        </div>
+        <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase text-muted">Workout Day</label>
+            <select required id="routineDay" class="form-select form-select-lg">
+                <option value="">Select day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+        <div id="exerciseList">
+            <div class="mb-2 input-group">
+                <input class="form-control" placeholder="Exercise name">
+                <input type="number" class="form-control" placeholder="Sets" style="max-width: 100px;">
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-dark mt-3 fw-bold" onclick="addExerciseField()">
+            <i class="bi bi-plus-lg me-2"></i>Add Exercise
+        </button>
+      </div>
+      <div class="modal-footer border-0 p-4 pt-0">
+        <button type="submit" class="btn btn-primary w-100">Save Routine</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Coach Profile Modal -->
+<div class="modal fade" id="coachProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark py-3">
+                <h5 class="modal-title text-white fw-bold" id="modalCoachName">Coach Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <div id="modalCoachAvatar" class="mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: #000; color: #FFD700; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; border: 4px solid #f8f9fa; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"></div>
+                    <h4 class="fw-bold mb-1" id="modalCoachTitle"></h4>
+                    <p class="text-muted small mb-0">Certified Personal Trainer</p>
+                </div>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2"><i class="bi bi-mortarboard me-2"></i>Credentials & Expertise</h6>
+                    <div class="p-3 bg-light rounded-3 small" id="modalCoachCreds"></div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2"><i class="bi bi-heart-pulse me-2"></i>Training Style & Habits</h6>
+                    <div class="p-3 bg-light rounded-3 small" id="modalCoachHabits"></div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2"><i class="bi bi-image me-2"></i>Credential Photos</h6>
+                    <div id="modalCoachPhotos" class="row g-2"></div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2"><i class="bi bi-star-fill me-2"></i>Trainee Ratings</h6>
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div id="modalCoachRating" class="fw-bold">No ratings yet</div>
+                            <span id="modalCoachReviewCount" class="badge bg-dark-subtle text-dark">0 reviews</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2"><i class="bi bi-chat-left-text me-2"></i>Past Trainee Feedback</h6>
+                    <div id="modalCoachReviews" class="d-flex flex-column gap-3"></div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" id="modalApplyBtn" class="btn btn-primary w-100">Apply for Coaching</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="coachAvailabilityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark py-3">
+                <h5 class="modal-title text-white fw-bold" id="modalAvailabilityTitle">Coach Availability</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex gap-4 mb-3 flex-wrap">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-block" style="width:16px;height:16px;background:#E8F5E9;border:1px solid #2E7D32;border-radius:3px;"></span>
+                        <small class="text-muted">Available</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-block" style="width:16px;height:16px;background:#FFEBEE;border:1px solid #C62828;border-radius:3px;"></span>
+                        <small class="text-muted">Unavailable</small>
+                    </div>
+                </div>
+                <div id="coachAvailabilityCalendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resignCoachModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="resignCoachForm" class="modal-content border-0 shadow rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark py-3">
+                <h5 class="modal-title text-white fw-bold">Resign from Coach</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small">You can leave an optional rating and feedback for this coach before ending the coaching session.</p>
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Coach Rating</label>
+                    <select id="resignCoachRating" class="form-select form-select-lg">
+                        <option value="">Skip for now</option>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Needs Improvement</option>
+                    </select>
+                </div>
+                <div class="mb-0">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Feedback</label>
+                    <textarea id="resignCoachFeedback" class="form-control form-control-lg" rows="4" placeholder="Share your experience with this coach..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="submit" class="btn btn-danger w-100">Submit and Resign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script src="js/member_dashboard.js?v=1.6"></script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitclub Gym • Admin Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+    --primary-yellow: #FFD700;
+    --sidebar-black: #111111;
+    --header-gray: #F5F5F5;
+    --text-dark: #333333;
+    --border-light: #EEEEEE;
+}
+
+body {
+    background: #FFFFFF;
+    color: var(--text-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Navbar Redesign */
+.navbar {
+    background: var(--header-gray);
+    height: 70px;
+    padding: 0 2rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+    border-bottom: 3px solid var(--primary-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #000 !important;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: #000;
+    border: 2px solid var(--primary-yellow);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+}
+
+#clock {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Sidebar Redesign */
+.sidebar {
+    background: var(--sidebar-black);
+    width: 260px;
+    height: calc(100vh - 70px);
+    position: fixed;
+    left: 0;
+    top: 70px;
+    z-index: 1040;
+    padding: 1.5rem 0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    color: var(--primary-yellow);
+    padding: 0.9rem 1.5rem;
+    margin: 0.4rem 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.2rem;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--primary-yellow);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    background: var(--primary-yellow);
+    color: #000;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #000;
+    color: var(--primary-yellow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.password-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.password-field {
+    position: relative;
+    display: inline-block;
+}
+
+.password-toggle-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+    color: #000;
+}
+
+.password-visible {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+/* Unified Confirmation Modal Design */
+#confirmModal .modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+}
+#confirmModal .modal-header {
+    border: none !important;
+    padding: 1.5rem 1.5rem 0 !important;
+}
+#confirmModal .modal-body {
+    padding: 2rem 1.5rem !important;
+}
+#confirmModal .modal-footer {
+    border: none !important;
+    padding: 0 1.5rem 2rem !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+}
+#confirmModal .btn-lg {
+    padding: 0.7rem 2rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.5px !important;
+}
+#confirmModal .btn-outline-secondary {
+    border: 2px solid #EEE !important;
+    color: #666 !important;
+    background: #FFF !important;
+}
+#confirmModal #confirmModalConfirm {
+    background: #000 !important;
+    color: #FFD700 !important;
+    border: none !important;
+}
+#confirmModal #confirmModalConfirm:hover {
+    background: #222 !important;
+}
+
+.sidebar .nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-bottom: 1.5rem;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    padding: 100px 2rem 2rem;
+    min-height: 100vh;
+    background: #FAFAFA;
+}
+
+@media (max-width: 992px) {
+    .sidebar { width: 80px; }
+    .sidebar .nav-link span { display: none; }
+    .sidebar .nav-link { justify-content: center; padding: 1rem; }
+    .main-content { margin-left: 80px; }
+}
+
+@media (max-width: 576px) {
+    .navbar { padding: 0 1rem; }
+    .navbar-brand { font-size: 1.1rem; }
+}
+
+/* Cards & Layout */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card {
+    background: #fff;
+    padding: 2rem;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    margin-bottom: 2rem;
+}
+
+/* Table Styling */
+.table-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+.table { margin-bottom: 0; }
+.table th {
+    background: #F9F9F9;
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #777;
+    border-bottom: 2px solid #EEE;
+}
+
+.table td {
+    padding: 1.2rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+.badge-staff { background: #E0F7FA; color: #00838F; }
+.badge-coach { background: #E1F5FE; color: #0277BD; }
+.badge-member { background: #F3E5F5; color: #6A1B9A; }
+.badge-admin { background: #212121; color: #FFFFFF; }
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.status-active { background: #E8F5E9; color: #2E7D32; }
+.status-deactivated { background: #FFEBEE; color: #C62828; }
+.status-expired { background: #FFF3E0; color: #E65100; }
+
+/* User Profile Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #EAEAEA;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.user-profile:hover {
+    background: #DDD;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #000;
+    color: var(--primary-yellow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.btn-ext {
+    background: var(--primary-yellow);
+    border: none;
+    color: #000;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-deact {
+    background: #fff;
+    border: 1px solid #ffcccc;
+    color: #dc3545;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-submit {
+    background: #000;
+    color: var(--primary-yellow);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.most-booked-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.blue-badge {
+    background: #0D6EFD;
+    color: #fff;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-select { 
+    border: 1px solid #dee2e6; 
+    border-radius: 6px; 
+    padding: 0.35rem 0.75rem; 
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+/* Tab Transitions */
+.tab-pane {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="navbar-brand">
+        <img src="../Fitclubgymicon.png" alt="Fitclub Gym Logo" onerror="this.style.display='none';">
+        Fitclub Gym • Admin
+    </span>
+    <div class="d-flex align-items-center gap-4">
+        <span id="clock"></span>
+
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-link position-relative p-0 text-dark" data-bs-toggle="dropdown">
+                <i class="bi bi-bell fs-4"></i>
+                <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                    0
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 overflow-hidden" id="notifList" style="width: 350px; max-height: 500px; overflow-y: auto;">
+                <li class="dropdown-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-uppercase small">Notifications</span>
+                    <button class="btn btn-sm btn-link text-primary p-0 text-decoration-none small" onclick="markAllAsRead(event)">Mark all as read</button>
+                </li>
+                <div id="notifItemsContainer">
+                    <li class="p-4 text-center text-muted small">No new notifications</li>
+                </div>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown">
+                <div class="user-avatar" id="userInitials">AD</div>
+                <div class="d-none d-md-block">
+                    <div style="font-size: 0.85rem; font-weight: 700; line-height: 1;" id="userName">System Admin</div>
+                    <div style="font-size: 0.7rem; color: #666;">Administrator</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                <li><a class="dropdown-item py-2" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="sidebar">
+    <div class="nav flex-column">
+        <a class="nav-link active" data-bs-toggle="tab" href="#dashboard">
+            <i class="bi bi-bar-chart-line"></i> Dashboard
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#users">
+            <i class="bi bi-people"></i> Member List
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#staff">
+            <i class="bi bi-person-gear"></i> Manage Staff
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#all-reports">
+            <i class="bi bi-shield-lock"></i> System Support
+        </a>
+        <a class="nav-link mt-auto" data-bs-toggle="tab" href="#settings">
+            <i class="bi bi-gear-fill"></i> Settings
+        </a>
+    </div>
+</div>
+
+<main class="main-content">
+    <div id="alertContainer"></div>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="dashboard">
+            <h2 class="section-title"><i class="bi bi-bar-chart-line"></i> Dashboard Overview</h2>
+            
+            <!-- Key Metrics Stats -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card text-center border-0 shadow-sm p-4 h-100" style="background: #E3F2FD;">
+                        <i class="bi bi-people display-6 mb-3 text-primary"></i>
+                        <h6 class="text-uppercase small fw-bold text-muted mb-1">Total Members</h6>
+                        <h2 class="fw-bold mb-0" id="totalMembers">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center border-0 shadow-sm p-4 h-100" style="background: #F3E5F5;">
+                        <i class="bi bi-person-badge display-6 mb-3" style="color: #6A1B9A;"></i>
+                        <h6 class="text-uppercase small fw-bold text-muted mb-1">Staff Users</h6>
+                        <h2 class="fw-bold mb-0" id="totalStaff">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center border-0 shadow-sm p-4 h-100" style="background: #FFF3E0;">
+                        <i class="bi bi-award display-6 mb-3" style="color: #E65100;"></i>
+                        <h6 class="text-uppercase small fw-bold text-muted mb-1">Total Coaches</h6>
+                        <h2 class="fw-bold mb-0" id="totalCoaches">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Registration Breakdown -->
+            <h4 class="mb-4 fw-bold"><i class="bi bi-calendar-month me-2"></i>Monthly Registration Growth</h4>
+            <div class="row g-4 mb-5" id="monthlyRegistrationDiv">
+                <!-- Will be populated by JS -->
+                <div class="col-12 text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div> Loading monthly data...
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card h-100">
+                        <h5 class="fw-bold mb-4">Coach Workload</h5>
+                        <div class="most-booked-card mb-4">
+                            <span class="fw-600 text-muted small text-uppercase">Top Performing Coach</span>
+                            <span class="blue-badge" id="mostBookedCoachName">...</span>
+                        </div>
+                        <div class="table-card">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Coach Name</th>
+                                        <th>Active Trainees</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coachTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <h5 class="fw-bold mb-4">Attendance Summary</h5>
+                        <div class="table-card">
+                            <table class="table align-middle small">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Check-ins</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member List Tab -->
+        <div class="tab-pane fade" id="users">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0"><i class="bi bi-people"></i> Full User Directory</h2>
+                <div class="input-group" style="width: 300px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" id="userSearch" class="form-control border-start-0" placeholder="Search by name...">
+                </div>
+            </div>
+
+            <h4 class="mb-3 fw-bold"><i class="bi bi-person-check me-2"></i>Active Members & Coaches</h4>
+            <div class="table-card mb-5">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Member ID (RFID)</th>
+                                <th>Coach Assgined</th>
+                                <th>Start Date</th>
+                                <th>Duration</th>
+                                <th>Expires On</th>
+                                <th>Status</th>
+                                <th>Quick Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h4 class="mb-3 fw-bold"><i class="bi bi-person-vcard me-2"></i>Temporary Members (No Expiry)</h4>
+            <div class="table-card mb-5">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Member ID (RFID)</th>
+                                <th>Start Date</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tempUsersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Support Tab -->
+        <div class="tab-pane fade" id="all-reports">
+            <h2 class="section-title"><i class="bi bi-shield-lock"></i> System Support</h2>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Reported By</th>
+                                <th>Category</th>
+                                <th>Issue Description</th>
+                                <th>Actions</th>
+                                <th>Status</th>
+                                <th>Date Issued</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allReportsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Staff Tab -->
+        <div class="tab-pane fade" id="staff">
+            <h2 class="section-title"><i class="bi bi-person-plus"></i> Manage Staff Accounts</h2>
+            <div class="card mb-5">
+                <h5 class="fw-bold mb-4">Create New Account</h5>
+                <form id="createStaffForm" class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Full Name</label>
+                        <input type="text" id="staffName" class="form-control form-control-lg" placeholder="Enter full name" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Gender</label>
+                        <select id="staffGender" class="form-select form-select-lg" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Age</label>
+                        <input type="number" id="staffAge" class="form-control form-control-lg" placeholder="Age" min="18" max="100" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Username</label>
+                        <input type="text" id="staffUser" class="form-control form-control-lg" placeholder="Login username" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Password</label>
+                        <input type="password" id="staffPass" class="form-control form-control-lg" placeholder="Login password" required>
+                        <small class="text-muted">Min. 8 characters, 1 special character, 1 number.</small>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-submit">Create Staff Account</button>
+                    </div>
+                </form>
+            </div>
+
+            <h4 class="mb-4 fw-bold">Current Staff Members</h4>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Password</th>
+                                <th>Date Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Staff Modal -->
+        <div class="modal fade" id="editStaffModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-person-gear"></i> Edit Staff Account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editStaffForm" class="row g-4">
+                            <input type="hidden" id="editStaffId">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Full Name</label>
+                                <input type="text" id="editStaffName" class="form-control form-control-lg" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Gender</label>
+                                <select id="editStaffGender" class="form-select form-select-lg" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Age</label>
+                                <input type="number" id="editStaffAge" class="form-control form-control-lg" min="18" max="100" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Username</label>
+                                <input type="text" id="editStaffUser" class="form-control form-control-lg" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Password <small class="text-muted">(leave blank to keep current)</small></label>
+                                <input type="password" id="editStaffPass" class="form-control form-control-lg" placeholder="Enter new password">
+                                <small class="text-muted">Min. 8 characters, 1 special character, 1 number.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Role</label>
+                                <select id="editStaffRole" class="form-select form-select-lg" required>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Status</label>
+                                <select id="editStaffStatus" class="form-select form-select-lg" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Deactivated">Deactivated</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-submit">Update Staff Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settings">
+            <h2 class="section-title"><i class="bi bi-gear-fill"></i> Account Settings</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Change Password</h5>
+                        <p class="text-muted small mb-4"><i class="bi bi-shield-lock me-2"></i>Answer your 4 security questions correctly to change your account password.</p>
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="bi bi-question-circle me-1"></i>Q1: What is the name of your first pet/dog?</label>
+                                <input type="text" id="secQ1Answer" class="form-control" required placeholder="Enter your answer">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="bi bi-question-circle me-1"></i>Q2: What is your favorite food?</label>
+                                <input type="text" id="secQ2Answer" class="form-control" required placeholder="Enter your answer">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="bi bi-question-circle me-1"></i>Q3: What city/town do you currently live in?</label>
+                                <input type="text" id="secQ3Answer" class="form-control" required placeholder="Enter your answer">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="bi bi-question-circle me-1"></i>Q4: What is the name of a specific item/thing you own (e.g. necklace, phone model)?</label>
+                                <input type="text" id="secQ4Answer" class="form-control" required placeholder="Enter your answer">
+                            </div>
+                            <hr class="my-3">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">New Password</label>
+                                <input type="password" id="newPassword" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Confirm New Password</label>
+                                <input type="password" id="confirmNewPassword" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-key me-2"></i>Update Password</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold mb-4">Profile Settings</h5>
+                        <form id="profileSettingsForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Name</label>
+                                <input type="text" id="settingsName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" id="settingsEmail" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Phone</label>
+                                <input type="tel" id="settingsPhone" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Address</label>
+                                <textarea id="settingsAddress" class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-dark">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="confirmModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div id="confirmModalIcon" class="mb-3" style="font-size: 3rem;"></div>
+                    <p id="confirmModalMessage" class="mb-0 text-muted" style="font-size: 1.1rem;"></p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center gap-3">
+                    <button type="button" class="btn btn-lg btn-outline-secondary px-5" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                    <button type="button" id="confirmModalConfirm" class="btn btn-lg px-5" style="border-radius: 10px; background: #000; color: #FFD700;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Info Modal -->
+    <div class="modal fade" id="memberInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%); border-radius: 16px 16px 0 0;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="mInfoAvatar" class="user-avatar" style="width:64px; height:64px; font-size:1.5rem; border: 3px solid #FFD700;"></div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="mInfoName">—</h5>
+                            <span id="mInfoRole" class="badge bg-dark mt-1">—</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-5 py-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-person me-2"></i>Basic Details</h6>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Full Name</div>
+                                <div class="fw-bold" id="mInfoFullName">—</div>
+                            </div>
+                            <div class="row mb-3 g-3">
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Gender</div>
+                                    <div class="fw-bold" id="mInfoGender">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Age</div>
+                                    <div class="fw-bold" id="mInfoAge">—</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Member ID (RFID)</div>
+                                <div class="fw-bold font-monospace text-danger" id="mInfoRfid">—</div>
+                            </div>
+                            <div class="row mb-3 g-3">
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Start Date</div>
+                                    <div class="fw-bold" id="mInfoStart">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Status</div>
+                                    <div id="mInfoStatus" class="fw-bold">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-geo-alt me-2"></i>Contact Info</h6>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-envelope me-1"></i>Email</div>
+                                <div class="fw-bold" id="mInfoEmail">—</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-telephone me-1"></i>Phone</div>
+                                <div class="fw-bold" id="mInfoPhone">—</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-house me-1"></i>Address</div>
+                                <div class="fw-bold" id="mInfoAddress" style="white-space: pre-wrap;">—</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-heart-pulse me-2"></i>Medical &amp; Additional</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Assigned Coach</div>
+                                    <div class="fw-bold" id="mInfoCoach">—</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Subscription Expires</div>
+                                    <div class="fw-bold" id="mInfoExpiry">—</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Medical Condition / Notes</div>
+                                <div class="fw-bold" id="mInfoMedical" style="white-space: pre-wrap; background:#FFF8DC; padding:10px 14px; border-left:4px solid #FFD700; border-radius:8px;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-end">
+                    <button type="button" class="btn px-4" style="background: #000; color: #FFD700; border-radius: 10px;" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                <!-- Edit RFID Modal -->
+    <div class="modal fade" id="editRfidModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%); border-radius: 16px 16px 0 0;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="user-avatar" style="width:50px; height:50px; font-size:1.2rem; border: 3px solid #FFD700; background: #000; color: #FFD700;">
+                            <i class="bi bi-credit-card-2-front-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Edit RFID Identification</h5>
+                            <span class="text-muted small" id="editRfidSubtitle">Assign new RFID card</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editRfidForm">
+                    <input type="hidden" id="editRfidMemberId">
+                    <div class="modal-body px-5 py-4">
+                        <div class="mb-4">
+                            <div class="small text-muted mb-1">Member Name</div>
+                            <div class="fw-bold fs-5" id="editRfidMemberName">—</div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="small text-muted mb-1">Current RFID</div>
+                            <div class="fw-bold font-monospace text-danger fs-6" id="editRfidCurrent">—</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">New RFID Identification</label>
+                            <div class="input-group">
+                                <input id="editRfidNew" class="form-control form-control-lg" placeholder="Scan new RFID tag" required>
+                                <button type="button" id="editRfidUsbBtn" class="btn btn-outline-success" title="Connect USB RFID Reader">
+                                    <i class="bi bi-usb-symbol"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-dark" onclick="generateEditRfid()">Generate</button>
+                            </div>
+                            <div class="form-text mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Scan the new RFID card with the reader or click Generate for a virtual code.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 justify-content-between">
+                        <button type="button" class="btn px-4 btn-outline-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="editRfidSaveBtn" onclick="submitEditRfidForm()" class="btn px-4" style="background: #000; color: #FFD700; border-radius: 10px;">
+                            <i class="bi bi-save me-1"></i> Save New RFID
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/admin.js?v=6"></script>
+<script>
+window.submitEditRfidForm = function() {
+    console.log('[RFID SAVE] submitEditRfidForm CALLED');
+    var midEl = document.getElementById('editRfidMemberId');
+    var newEl = document.getElementById('editRfidNew');
+    if (!midEl || !newEl) { console.error('[RFID SAVE] Elements missing'); showAlert('Error: Form elements not found. Please refresh the page.', 'danger'); return; }
+    var member_id = midEl.value;
+    var new_rfid = newEl.value.trim().toUpperCase();
+    console.log('[RFID SAVE] member_id=', member_id, 'new_rfid=', new_rfid);
+    if (!new_rfid) {
+        showAlert('Please enter or scan a new RFID code', 'warning');
+        newEl.focus();
+        return;
+    }
+    if (!member_id) {
+        showAlert('Member not found. Close the modal and try again.', 'danger');
+        return;
+    }
+    fetch('../api.php?action=update_rfid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ member_id: member_id, new_rfid: new_rfid })
+    }).then(function(r) {
+        console.log('[RFID SAVE] response HTTP status=', r.status);
+        return r.text().then(function(t) {
+            console.log('[RFID SAVE] raw body (len=' + t.length + '): |' + t + '|');
+            var parsed = null;
+            try { parsed = JSON.parse(t); }
+            catch(e) { parsed = { status: 'error', message: 'Invalid server response. HTTP '+r.status+', body len='+t.length+': ' + (t ? t.substring(0,120) : '(EMPTY)') }; }
+            return parsed;
+        });
+    }).then(function(result) {
+        console.log('[RFID SAVE] final result=', result);
+        if (result.status === 'success') {
+            showAlert(result.message || 'RFID updated successfully!', 'success');
+            try {
+                var m = bootstrap.Modal.getInstance(document.getElementById('editRfidModal'));
+                if (m) m.hide();
+            } catch(e) {}
+            if (typeof loadData === 'function') loadData();
+        } else {
+            showAlert(result.message || 'Unknown error while saving RFID', 'danger');
+        }
+    }).catch(function(err) {
+        console.error('[RFID SAVE] network error:', err);
+        showAlert('Network / Server error: ' + (err && err.message ? err.message : err), 'danger');
+    });
+};
+document.addEventListener('DOMContentLoaded', function() {
+    var ri = document.getElementById('editRfidNew');
+    if (ri) ri.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); submitEditRfidForm(); } });
+});
+</script>
+</body>
+</html>
