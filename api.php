@@ -159,26 +159,74 @@ try {
         $data = json_decode(file_get_contents('php://input'), true);
         $username = trim($data['username'] ?? '');
         $password = $data['password'] ?? '';
-        
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $maxAttempts = 5;
+        $lockMinutes = 15;
+
         if ($username && $password) {
+            // --- Rate limit check ---
+            $rateStmt = $pdo->prepare("SELECT attempts, locked_until FROM login_attempts WHERE username = ? AND ip_address = ?");
+            $rateStmt->execute([$username, $clientIp]);
+            $rate = $rateStmt->fetch();
+
+            $attempts = $rate['attempts'] ?? 0;
+            $lockedUntil = $rate['locked_until'] ?? null;
+
+            // If a previous lock has expired, reset the counter so the user gets a fresh 5 attempts
+            if ($lockedUntil && strtotime($lockedUntil) <= time()) {
+                $pdo->prepare("UPDATE login_attempts SET attempts = 0, locked_until = NULL WHERE username = ? AND ip_address = ?")
+                    ->execute([$username, $clientIp]);
+                $attempts = 0;
+                $lockedUntil = null;
+            }
+
+            if ($lockedUntil) {
+                $remaining = strtotime($lockedUntil) - time();
+                $mins = max(1, ceil($remaining / 60));
+                $response['message'] = "Too many failed login attempts. Please try again in {$mins} minute(s).";
+                break;
+            }
+
             $stmt = $pdo->prepare("SELECT * FROM members WHERE username = ? AND status = 'Active'");
             $stmt->execute([$username]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
                 if (in_array($user['role'], ['Staff', 'Admin'])) {
+                    // Successful login — reset failed attempts
+                    $pdo->prepare("DELETE FROM login_attempts WHERE username = ? AND ip_address = ?")
+                        ->execute([$username, $clientIp]);
+
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['name'] = $user['name'];
                     $_SESSION['profile_image'] = $user['profile_image'];
-                    
-                    $redirect = ($user['role'] === 'Admin') ? 'HTML/admin.html' : 'HTML/index.html';
+
+                    $redirect = ($user['role'] === 'Admin') ? 'HTML/admin.html' : 'HTML/staff.html';
                     $response = ['status' => 'success', 'redirect' => $redirect];
                 } else {
                     $response['message'] = 'Incorrect portal for your account type.';
                 }
             } else {
-                $response['message'] = 'Invalid username or password.';
+                // Failed login — increment attempts and lock if threshold reached
+                $attempts = $attempts + 1;
+                $newLockedUntil = ($attempts >= $maxAttempts)
+                    ? date('Y-m-d H:i:s', strtotime('+' . $lockMinutes . ' minutes'))
+                    : null;
+
+                $upsert = $pdo->prepare(
+                    "INSERT INTO login_attempts (username, ip_address, attempts, last_attempt, locked_until)
+                     VALUES (?, ?, ?, NOW(), ?)
+                     ON DUPLICATE KEY UPDATE attempts = VALUES(attempts), last_attempt = NOW(), locked_until = VALUES(locked_until)"
+                );
+                $upsert->execute([$username, $clientIp, $attempts, $newLockedUntil]);
+
+                if ($attempts >= $maxAttempts) {
+                    $response['message'] = "Too many failed login attempts. Account locked for {$lockMinutes} minutes.";
+                } else {
+                    $remaining = $maxAttempts - $attempts;
+                    $response['message'] = "Invalid username or password. {$remaining} attempt(s) remaining.";
+                }
             }
         }
         break;
@@ -1406,7 +1454,7 @@ try {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
             http_response_code(403); exit;
         }
-        $staff = $pdo->query("SELECT id, username, password, name, role, status, profile_image, created_at FROM members WHERE role IN ('Staff', 'Admin') ORDER BY role ASC, name ASC")->fetchAll();
+        $staff = $pdo->query("SELECT id, username, password, name, role, status, profile_image, created_at, gender, age FROM members WHERE role IN ('Staff', 'Admin') ORDER BY role ASC, name ASC")->fetchAll();
         $response = ['status' => 'success', 'staff' => $staff];
         break;
 
@@ -1621,13 +1669,14 @@ try {
 
     case 'forgot_password':
         $data = json_decode(file_get_contents('php://input'), true);
-        $username = trim($data['username'] ?? '');
-        if (!$username) {
+        $identifier = trim($data['username'] ?? $data['username_or_email'] ?? '');
+        if (!$identifier) {
             $response = ['status' => 'error', 'message' => 'Please enter your username'];
             break;
         }
-        $stmt = $pdo->prepare("SELECT * FROM members WHERE username = ?");
-        $stmt->execute([$username]);
+        // Look up by username or email
+        $stmt = $pdo->prepare("SELECT * FROM members WHERE username = ? OR email = ? LIMIT 1");
+        $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch();
         if (!$user) {
             $response = ['status' => 'error', 'message' => 'No user found with that username'];

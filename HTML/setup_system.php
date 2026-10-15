@@ -290,7 +290,7 @@ try {
                 </div>
             <?php endif; ?>
             
-            <a href="index.html" class="btn btn-gold">
+            <a href="staff.html" class="btn btn-gold">
                 Go to Dashboard <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>

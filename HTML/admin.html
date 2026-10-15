@@ -127,35 +127,6 @@ body {
     font-size: 0.8rem;
 }
 
-.password-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.password-field {
-    position: relative;
-    display: inline-block;
-}
-
-.password-toggle-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s;
-}
-
-.password-toggle-btn:hover {
-    color: #000;
-}
-
-.password-visible {
-    font-family: monospace;
-    letter-spacing: 1px;
-}
-
 /* Unified Confirmation Modal Design */
 #confirmModal .modal-content {
     border-radius: 16px !important;
@@ -664,7 +635,6 @@ body {
                                 <th>Name</th>
                                 <th>Username</th>
                                 <th>Role</th>
-                                <th>Password</th>
                                 <th>Date Created</th>
                                 <th>Actions</th>
                             </tr>
@@ -965,7 +935,7 @@ body {
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/admin.js?v=6"></script>
+<script src="js/admin.js?v=7"></script>
 <script>
 window.submitEditRfidForm = function() {
     console.log('[RFID SAVE] submitEditRfidForm CALLED');

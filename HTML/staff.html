@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitclub Gym • Staff Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+    --primary-yellow: #FFD700;
+    --sidebar-black: #111111;
+    --header-gray: #F5F5F5;
+    --text-dark: #333333;
+    --border-light: #EEEEEE;
+}
+
+body {
+    background: #FFFFFF;
+    color: var(--text-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Navbar Redesign */
+.navbar {
+    background: var(--header-gray);
+    height: 70px;
+    padding: 0 2rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+    border-bottom: 3px solid var(--primary-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #000 !important;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: #000;
+    border: 2px solid var(--primary-yellow);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+}
+
+#clock {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Sidebar Redesign */
+.sidebar {
+    background: var(--sidebar-black);
+    width: 260px;
+    height: calc(100vh - 70px);
+    position: fixed;
+    left: 0;
+    top: 70px;
+    z-index: 1040;
+    padding: 1.5rem 0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    color: var(--primary-yellow);
+    padding: 0.9rem 1.5rem;
+    margin: 0.4rem 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.2rem;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--primary-yellow);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    background: var(--primary-yellow);
+    color: #000;
+    border-color: var(--primary-yellow);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Custom Confirmation Modal Design */
+#confirmModal .modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+}
+
+#confirmModal .modal-header {
+    border: none !important;
+    padding: 1.5rem 1.5rem 0 !important;
+}
+
+#confirmModal .modal-body {
+    padding: 2rem 1.5rem !important;
+}
+
+#confirmModal .modal-footer {
+    border: none !important;
+    padding: 0 1.5rem 2rem !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+}
+
+#confirmModal .btn-lg {
+    padding: 0.7rem 2rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+#confirmModal .btn-outline-secondary {
+    border: 2px solid #EEE !important;
+    color: #666 !important;
+    background: #FFF !important;
+}
+
+#confirmModal #confirmModalConfirm {
+    background: #000 !important;
+    color: #FFD700 !important;
+    border: none !important;
+}
+
+#confirmModal #confirmModalConfirm:hover {
+    background: #222 !important;
+}
+
+.sidebar .nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    padding: 100px 2rem 2rem;
+    min-height: 100vh;
+    background: #FAFAFA;
+}
+
+@media (max-width: 992px) {
+    .sidebar { width: 80px; }
+    .sidebar .nav-link span, .sidebar .nav-link div { display: none; }
+    .sidebar .nav-link { justify-content: center; padding: 1rem; }
+    .main-content { margin-left: 80px; }
+}
+
+@media (max-width: 576px) {
+    .navbar { padding: 0 1rem; }
+    .navbar-brand { font-size: 1.1rem; }
+}
+
+/* Cards & Layout */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.attendance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.attendance-column h6 {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+    color: #666;
+}
+
+.attendance-card {
+    background: #fff;
+    padding: 2rem;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: transform 0.2s;
+}
+
+.attendance-card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-checkin, .btn-checkout {
+    height: 50px;
+    font-weight: 700;
+    border-radius: 10px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-checkin { 
+    background: #000; 
+    color: var(--primary-yellow); 
+    border: none; 
+}
+
+.btn-checkout { 
+    background: var(--primary-yellow); 
+    color: #000; 
+    border: none; 
+}
+
+.form-control-lg {
+    border: 2px solid #EEE;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+}
+
+.form-control-lg:focus {
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.15);
+}
+
+/* Table Styling */
+.table-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+.table { margin-bottom: 0; }
+.table th {
+    background: #F9F9F9;
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #777;
+    border-bottom: 2px solid #EEE;
+}
+
+.table td {
+    padding: 1.2rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+.badge-active { background: #E8F5E9; color: #2E7D32; }
+.badge-inactive { background: #FFEBEE; color: #C62828; }
+.badge-member { background: #E3F2FD; color: #0D47A1; }
+.badge-coach { background: #F3E5F5; color: #4A148C; }
+.badge-staff { background: #FFF3E0; color: #E65100; }
+.badge-admin { background: #212121; color: #FFFFFF; }
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.status-active { background: #E8F5E9; color: #2E7D32; }
+.status-deactivated { background: #FFEBEE; color: #C62828; }
+.status-expired { background: #FFF3E0; color: #E65100; }
+
+/* Tab Transitions */
+.tab-pane {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* User Profile Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #EAEAEA;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.user-profile:hover {
+    background: #DDD;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #000;
+    color: var(--primary-yellow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.terminal-switch { position: relative; }
+#terminalToggle { display: none; }
+.switch-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 140px;
+    height: 40px;
+    background: #F0F0F0;
+    border-radius: 20px;
+    padding: 0 15px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 2px solid #EEE;
+}
+.switch-handle {
+    position: absolute;
+    left: 4px;
+    top: 3px;
+    width: 32px;
+    height: 30px;
+    background: #FFF;
+    border-radius: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+#terminalToggle:checked + .switch-label { background: #198754; border-color: #157347; }
+#terminalToggle:checked + .switch-label .switch-handle { transform: translateX(100px); }
+.status-text { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; z-index: 1; transition: all 0.3s ease; }
+.status-text.off { color: #888; }
+#terminalToggle:checked + .switch-label .status-text.off { opacity: 0; }
+.status-text.on { color: #FFF; opacity: 0; }
+#terminalToggle:checked + .switch-label .status-text.on { opacity: 1; }
+
+.scan-ring {
+    width: 100px;
+    height: 100px;
+    border: 4px solid #EEE;
+    border-radius: 50%;
+    color: #CCC;
+    transition: all 0.3s ease;
+}
+#terminalToggle:checked ~ #terminalStatusBox .scan-ring {
+    border-color: var(--primary-yellow);
+    color: var(--primary-yellow);
+    animation: scanPulse 2s infinite;
+}
+@keyframes scanPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+    <span class="navbar-brand">
+        <img src="../Fitclubgymicon.png" alt="Fitclub Gym Logo" onerror="this.style.display='none';">
+        Fitclub Gym • <span id="userRole">Staff</span>
+    </span>
+    <div class="d-flex align-items-center gap-4">
+        <span id="clock"></span>
+        
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-link position-relative p-0 text-dark" data-bs-toggle="dropdown">
+                <i class="bi bi-bell fs-4"></i>
+                <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                    0
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 overflow-hidden" id="notifList" style="width: 350px; max-height: 500px; overflow-y: auto;">
+                <li class="dropdown-header bg-light py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-uppercase small">Notifications</span>
+                    <button class="btn btn-sm btn-link text-primary p-0 text-decoration-none small" onclick="markAllAsRead(event)">Mark all as read</button>
+                </li>
+                <div id="notifItemsContainer">
+                    <li class="p-4 text-center text-muted small">No new notifications</li>
+                </div>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown">
+                <div class="user-avatar" id="userInitials">JD</div>
+                <div class="d-none d-md-block">
+                    <div style="font-size: 0.85rem; font-weight: 700; line-height: 1;" id="userName">John Doe</div>
+                    <div style="font-size: 0.7rem; color: #666;" id="userRoleBadge">Staff Member</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="sidebar">
+    <div class="nav flex-column" id="sidebarNav">
+        <a class="nav-link active" data-bs-toggle="tab" href="#attendance" title="Dashboard">
+            <i class="bi bi-calendar-check"></i> Dashboard
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#members" title="Member List">
+            <i class="bi bi-people"></i> Member List
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#register" title="Registration">
+            <i class="bi bi-person-plus"></i> Registration
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#coach-monitor" title="Coach Monitor">
+            <i class="bi bi-display"></i> Coach Monitor
+        </a>
+        <a class="nav-link" data-bs-toggle="tab" href="#reports" title="System Support">
+            <i class="bi bi-headset"></i> System Support
+        </a>
+        <div class="mt-auto pb-3">
+            <a class="nav-link" data-bs-toggle="tab" href="#settings" title="Settings">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+        </div>
+    </div>
+</div>
+
+<main class="main-content">
+    <div id="alertContainer"></div>
+
+    <div class="tab-content">
+        <!-- Attendance/Dashboard Tab -->
+        <div class="tab-pane fade show active" id="attendance">
+            <h2 class="section-title"><i class="bi bi-speedometer2"></i> Dashboard Overview</h2>
+            
+            <div class="row g-4 mb-5">
+                <!-- Left: Daily Attendance Chart -->
+                <div class="col-md-7">
+                    <div class="card h-100 p-4">
+                        <h5 class="fw-bold mb-4">Daily Attendance History</h5>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="monthlyAttendanceChart"></canvas>
+                        </div>
+                        <div id="chartTooltip" class="mt-3 text-center fw-bold"></div>
+                    </div>
+                </div>
+
+                <!-- Right: Scan Only Terminal -->
+                <div class="col-md-5">
+                    <div class="card h-100 position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="mb-0 fw-bold text-uppercase small text-muted">Scan Terminal</h6>
+                            <div class="d-flex gap-2">
+                                <!-- USB Connect Button -->
+                                <button id="usbConnectBtn" class="btn btn-sm btn-outline-dark" title="Connect USB RFID Reader">
+                                    <i class="bi bi-usb-symbol"></i> USB
+                                </button>
+                                <!-- Slide Vector Toggle -->
+                                <div class="terminal-switch">
+                                    <input type="checkbox" id="terminalToggle">
+                                    <label for="terminalToggle" class="switch-label">
+                                        <span class="status-text off">Inactive</span>
+                                        <span class="status-text on">Active</span>
+                                        <div class="switch-handle"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="terminalStatusBox" class="text-center py-4">
+                            <div class="scan-ring mx-auto mb-3 d-flex align-items-center justify-content-center" id="scanIndicator">
+                                <i class="bi bi-upc-scan display-4"></i>
+                            </div>
+                            <h4 class="fw-bold" id="terminalStatusTitle">Terminal Locked</h4>
+                            <p class="text-muted small" id="terminalStatusDesc">Switch to Active to begin scanning</p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <input type="text" id="unifiedScanInput" class="form-control form-control-lg text-center font-monospace" placeholder="WAITING..." readonly style="letter-spacing: 2px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-4 fw-bold">Recent Activity Today</h4>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Check-in Time</th>
+                                <th>Check-out Time</th>
+                                <th>Session Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h4 class="mb-4 mt-5 fw-bold">Attendance History</h4>
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <button class="btn btn-outline-dark" id="prevDayBtn"><i class="bi bi-chevron-left"></i> Previous</button>
+                <input type="date" id="historyDate" class="form-control" style="width: auto;">
+                <button class="btn btn-outline-dark" id="nextDayBtn">Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Check-in Time</th>
+                                <th>Check-out Time</th>
+                                <th>Session Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyAttendanceTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settings">
+            <h2 class="section-title"><i class="bi bi-gear"></i> Settings</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold mb-4">Security &amp; Password</h5>
+                        <p class="text-muted small mb-4"><i class="bi bi-shield-lock me-2"></i>Save a security question to recover your account if you forget your password.</p>
+                        <form id="securityQuestionsForm" class="mb-4">
+                            <h6 class="fw-bold text-muted text-uppercase small mb-3">Save Your Security Question</h6>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted text-uppercase">Select a Security Question</label>
+                                        <select id="secQuestionSelect" class="form-select" required>
+                                            <option value="">-- Choose a question --</option>
+                                            <option value="What is the name of your first pet/dog?">What is the name of your first pet/dog?</option>
+                                            <option value="What is your favorite food?">What is your favorite food?</option>
+                                            <option value="What city/town do you currently live in?">What city/town do you currently live in?</option>
+                                            <option value="What is the name of a specific item/thing you own?">What is the name of a specific item/thing you own?</option>
+                                            <option value="custom">-- Write your own question --</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3" id="customQuestionWrap" style="display: none;">
+                                        <label class="form-label fw-bold small text-muted text-uppercase">Your Custom Question</label>
+                                        <input type="text" id="secCustomQuestion" class="form-control" placeholder="Enter your own security question">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <div class="mb-3 w-100">
+                                        <label class="form-label fw-bold small text-muted text-uppercase">Your Answer</label>
+                                        <input type="text" id="secAnswer" class="form-control" required placeholder="Case-insensitive">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-dark w-100"><i class="bi bi-floppy2 me-2"></i>Save Security Question</button>
+                        </form>
+                        <hr class="my-4">
+                        <form id="changePasswordForm">
+                            <h6 class="fw-bold text-muted text-uppercase small mb-3">Change Password</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">New Password</label>
+                                        <input type="password" id="newPassword" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Confirm New Password</label>
+                                        <input type="password" id="confirmNewPassword" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-key me-2"></i>Update Password</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold mb-4">Profile Settings</h5>
+                        <form id="profileSettingsForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Name</label>
+                                <input type="text" id="settingsName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" id="settingsEmail" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Phone</label>
+                                <input type="tel" id="settingsPhone" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Address</label>
+                                <textarea id="settingsAddress" class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-dark">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Members List Tab -->
+        <div class="tab-pane fade" id="members">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0"><i class="bi bi-people"></i> Member Directory</h2>
+                <div class="d-flex gap-3">
+                    <div class="input-group" style="width: 300px;">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="memberSearch" class="form-control border-start-0" placeholder="Search by name or ID...">
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3 fw-bold"><i class="bi bi-person-check me-2"></i>Active Members & Coaches</h4>
+            <div class="table-card mb-5">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="cursor: pointer;" onclick="sortMembers('name')" data-column="name">Name <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('role')" data-column="role">Role <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('rfid')" data-column="rfid">Member ID (RFID) <i class="sort-icon bi"></i></th>
+                                <th>Coach Assigned</th>
+                                <th style="cursor: pointer;" onclick="sortMembers('start_date')" data-column="start_date">Start Date <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('duration_days')" data-column="duration_days">Duration <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('expires_on')" data-column="expires_on">Expires On <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('status')" data-column="status">Status <i class="sort-icon bi"></i></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h4 class="mb-3 fw-bold"><i class="bi bi-person-vcard me-2"></i>Temporary Members (No Expiry)</h4>
+            <div class="table-card mb-5">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="cursor: pointer;" onclick="sortMembers('name')" data-column="name">Name <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('role')" data-column="role">Role <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('rfid')" data-column="rfid">Member ID (RFID) <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('start_date')" data-column="start_date">Start Date <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('duration_days')" data-column="duration_days">Duration <i class="sort-icon bi"></i></th>
+                                <th style="cursor: pointer;" onclick="sortMembers('status')" data-column="status">Status <i class="sort-icon bi"></i></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tempMembersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Tab -->
+        <div class="tab-pane fade" id="register">
+            <h2 class="section-title"><i class="bi bi-person-plus"></i> New Registration</h2>
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <form id="registerForm" class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" required id="regName" class="form-control form-control-lg" placeholder="Enter full name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Gender</label>
+                        <select required id="regGender" class="form-select form-select-lg">
+                            <option value="">Select</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Age</label>
+                        <input type="number" required min="1" id="regAge" class="form-control form-control-lg">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Account Type</label>
+                        <select required id="regRole" class="form-select form-select-lg">
+                            <option value="Member">Gym Member</option>
+                            <option value="Coach">Professional Coach</option>
+                            <option value="Temporary">Temporary Member (No Expiry)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">RFID Identification</label>
+                        <div class="input-group">
+                            <input id="regRfid" class="form-control form-control-lg" placeholder="Scan Tag">
+                            <button type="button" id="regUsbConnectBtn" class="btn btn-outline-success" title="Connect USB RFID Reader">
+                                <i class="bi bi-usb-symbol"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-dark" onclick="generateRFID()">Generate</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Subscription Plan</label>
+                        <select id="regPlan" class="form-select form-select-lg">
+                            <option value="7">Weekly (7 Days)</option>
+                            <option value="30">Monthly (30 Days)</option>
+                            <option value="90">Quarterly (90 Days)</option>
+                            <option value="365">Yearly (365 Days)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-dark btn-lg px-5 py-3 fw-bold">
+                            Complete Registration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Coach Monitor Tab -->
+        <div class="tab-pane fade" id="coach-monitor">
+            <h2 class="section-title"><i class="bi bi-display"></i> Professional Coach Monitor</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="table-card p-4">
+                        <h5 class="fw-bold mb-4">Select Coach</h5>
+                        <div class="list-group list-group-flush" id="coachSelectList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="table-card p-4">
+                        <h5 class="fw-bold mb-4">Availability Calendar</h5>
+                        <div id="coachCalendar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support/Reports Tab -->
+        <div class="tab-pane fade" id="reports">
+            <h2 class="section-title"><i class="bi bi-headset"></i> Support & Issues</h2>
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+                <h5 class="fw-bold mb-4">Submit New Issue</h5>
+                <form id="staffIssueForm" class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Category</label>
+                        <select id="staffReportCategory" class="form-select form-select-lg" required>
+                            <option value="Technical Issue">Technical Issue</option>
+                            <option value="Membership Query">Membership Query</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Describe the issue</label>
+                        <textarea id="staffReportIssue" class="form-control form-control-lg" rows="4" placeholder="Provide details about the issue..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-dark btn-lg px-5">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+
+            <h4 class="mb-4 fw-bold">System Reports History</h4>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Reported By</th>
+                                <th>Category</th>
+                                <th>Description of Issue</th>
+                                <th>Status</th>
+                                <th>Date Submitted</th>
+                                <th>Resolution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="confirmModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div id="confirmModalIcon" class="mb-3" style="font-size: 3rem;"></div>
+                    <p id="confirmModalMessage" class="mb-0 text-muted" style="font-size: 1.1rem;"></p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center gap-3">
+                    <button type="button" class="btn btn-lg btn-outline-secondary px-5" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                    <button type="button" id="confirmModalConfirm" class="btn btn-lg px-5" style="border-radius: 10px; background: #000; color: #FFD700;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Info Modal -->
+    <div class="modal fade" id="memberInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%); border-radius: 16px 16px 0 0;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="mInfoAvatar" class="user-avatar" style="width:64px; height:64px; font-size:1.5rem; border: 3px solid #FFD700;"></div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="mInfoName">—</h5>
+                            <span id="mInfoRole" class="badge bg-dark mt-1">—</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-5 py-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-person me-2"></i>Basic Details</h6>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Full Name</div>
+                                <div class="fw-bold" id="mInfoFullName">—</div>
+                            </div>
+                            <div class="row mb-3 g-3">
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Gender</div>
+                                    <div class="fw-bold" id="mInfoGender">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Age</div>
+                                    <div class="fw-bold" id="mInfoAge">—</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Member ID (RFID)</div>
+                                <div class="fw-bold font-monospace text-danger" id="mInfoRfid">—</div>
+                            </div>
+                            <div class="row mb-3 g-3">
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Start Date</div>
+                                    <div class="fw-bold" id="mInfoStart">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Status</div>
+                                    <div id="mInfoStatus" class="fw-bold">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-geo-alt me-2"></i>Contact Info</h6>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-envelope me-1"></i>Email</div>
+                                <div class="fw-bold" id="mInfoEmail">—</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-telephone me-1"></i>Phone</div>
+                                <div class="fw-bold" id="mInfoPhone">—</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1"><i class="bi bi-house me-1"></i>Address</div>
+                                <div class="fw-bold" id="mInfoAddress" style="white-space: pre-wrap;">—</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-heart-pulse me-2"></i>Medical &amp; Additional</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Assigned Coach</div>
+                                    <div class="fw-bold" id="mInfoCoach">—</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Subscription Expires</div>
+                                    <div class="fw-bold" id="mInfoExpiry">—</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">Medical Condition / Notes</div>
+                                <div class="fw-bold" id="mInfoMedical" style="white-space: pre-wrap; background:#FFF8DC; padding:10px 14px; border-left:4px solid #FFD700; border-radius:8px;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-end">
+                    <button type="button" class="btn px-4" style="background: #000; color: #FFD700; border-radius: 10px;" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Edit RFID Modal -->
+     <div class="modal fade" id="editRfidModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content" style="border-radius: 20px; border: 2px solid #FFD700; box-shadow: 0 20px 60px rgba(255,215,0,0.15), 0 10px 30px rgba(0,0,0,0.4); background: #fff;">
+                <div class="modal-header pb-2" style="background: linear-gradient(135deg, #E8E8E8 0%, #FFFFFF 45%, #C0C0C0 100%); border-radius: 18px 18px 0 0; border-bottom: 2px solid #FFD700;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center justify-content-center" style="width:58px; height:58px; border-radius: 14px; border: 3px solid #FFD700; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); box-shadow: 0 4px 12px rgba(255,215,0,0.25);">
+                            <i class="bi bi-credit-card-2-front-fill" style="font-size:1.5rem; color: #FFD700;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" style="letter-spacing: 0.3px;">Edit RFID Identification</h5>
+                            <span class="text-muted small" id="editRfidSubtitle" style="font-size: 0.82rem;">Assign a new RFID card to the member</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" style="filter: grayscale(1) brightness(0.6);" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editRfidForm">
+                    <input type="hidden" id="editRfidMemberId">
+                    <div class="modal-body px-5 py-5" style="background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);">
+                        <div class="mb-4 p-4" style="border-radius: 12px; background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); border: 1px solid #e5e5e5;">
+                            <div class="small text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;">Member Name</div>
+                            <div class="fw-bold fs-4" id="editRfidMemberName" style="color:#1a1a1a;">—</div>
+                        </div>
+                        <div class="mb-5 p-4" style="border-radius: 12px; background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 100%); border: 1px solid #FFD700;">
+                            <div class="small text-uppercase mb-2" style="color:#b8860b; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;">Current RFID</div>
+                            <div class="fw-bold font-monospace fs-5" id="editRfidCurrent" style="color:#8B0000;">—</div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="form-label fw-bold text-uppercase" style="font-size:0.78rem; letter-spacing:0.6px; color:#444;">New RFID Identification</label>
+                            <div class="input-group input-group-lg" style="box-shadow: 0 4px 14px rgba(0,0,0,0.06);">
+                                <span class="input-group-text" style="background: linear-gradient(135deg, #C0C0C0, #E8E8E8); border: 2px solid #FFD700; border-right: none; border-radius: 10px 0 0 10px; color:#1a1a1a;">
+                                    <i class="bi bi-shield-lock-fill" style="color:#8B6914;"></i>
+                                </span>
+                                <input id="editRfidNew" class="form-control form-control-lg font-monospace" placeholder="SCAN NEW RFID TAG" style="border: 2px solid #FFD700; border-left: none; border-right: none; background: #FFFEF7; letter-spacing: 1.5px; font-weight:600; color:#1a1a1a;" required>
+                                <button type="button" id="editRfidUsbBtn" class="btn" title="Connect USB RFID Reader" style="background: linear-gradient(135deg, #E8E8E8, #C0C0C0); color: #1a1a1a; border: 2px solid #FFD700; border-left: none; border-right: none;">
+                                    <i class="bi bi-usb-symbol"></i>
+                                </button>
+                                <button type="button" class="btn" onclick="generateEditRfid()" style="background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); color: #FFD700; border: 2px solid #FFD700; border-left: none; border-radius: 0 10px 10px 0; font-weight:600;">
+                                    <i class="bi bi-magic me-1" style="color:#FFD700;"></i> Generate
+                                </button>
+                            </div>
+                            <div class="mt-3 p-3" style="border-radius: 10px; background: #f5f5f5; border-left: 4px solid #FFD700;">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-info-circle-fill mt-0.5" style="color:#B8860B;"></i>
+                                    <div class="small" style="color:#555; line-height:1.5;">
+                                        Scan the new RFID card with the USB reader, or click <b style="color:#8B6914;">Generate</b> to create a virtual RFID code for testing or cardless members.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer pt-0 pb-4 px-5 justify-content-between" style="border-top: 1px dashed #ddd; margin-top: -8px; padding-top: 20px !important;">
+                        <button type="button" class="btn px-5 py-2.5" style="border-radius: 12px; background: linear-gradient(135deg, #E8E8E8 0%, #D0D0D0 100%); color: #333; border: 2px solid #bbb; font-weight:600;" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </button>
+                        <button type="button" id="editRfidSaveBtn" onclick="submitEditRfidForm()" class="btn px-5 py-2.5" style="border-radius: 12px; background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%); color: #FFD700; border: 2px solid #FFD700; font-weight:700; letter-spacing:0.4px; box-shadow: 0 6px 18px rgba(255,215,0,0.2);">
+                            <i class="bi bi-save-fill me-1"></i> Save New RFID
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coach Profile Modal -->
+    <div class="modal fade" id="coachProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: 2px solid #FFD700; box-shadow: 0 20px 60px rgba(255,215,0,0.15), 0 10px 30px rgba(0,0,0,0.4); background: #fff;">
+                <div class="modal-header pb-3" style="background: linear-gradient(135deg, #E8E8E8 0%, #FFFFFF 45%, #C0C0C0 100%); border-radius: 18px 18px 0 0; border-bottom: 2px solid #FFD700;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="cProfileAvatar" class="user-avatar bg-dark text-warning" style="width:60px; height:60px; font-size:1.4rem; border: 3px solid #FFD700;">—</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="cProfileName" style="letter-spacing: 0.3px;">—</h5>
+                            <span class="badge bg-dark mt-1">Coach</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" style="filter: grayscale(1) brightness(0.6);" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-5 py-4" style="background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);">
+                    <div class="mb-4">
+                        <h6 class="text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;"><i class="bi bi-mortarboard me-2"></i>Credentials &amp; Expertise</h6>
+                        <div class="p-3 rounded-3 small" id="cProfileCreds" style="background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); border: 1px solid #e5e5e5;">Loading...</div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;"><i class="bi bi-heart-pulse me-2"></i>Training Style &amp; Habits</h6>
+                        <div class="p-3 rounded-3 small" id="cProfileHabits" style="background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%); border: 1px solid #e5e5e5;">Loading...</div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;"><i class="bi bi-image me-2"></i>Credential Photos</h6>
+                        <div id="cProfilePhotos" class="row g-2"></div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;"><i class="bi bi-star-fill me-2"></i>Performance &amp; Ratings</h6>
+                        <div class="p-3 rounded-3" style="background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 100%); border: 1px solid #FFD700;">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div id="cProfileRating" class="fw-bold" style="color:#8B6914;">No ratings yet</div>
+                                <span id="cProfileReviewCount" class="badge bg-dark text-warning">0 reviews</span>
+                            </div>
+                            <div class="row g-3 mt-3">
+                                <div class="col-6">
+                                    <div class="small text-muted mb-1">Max Trainees</div>
+                                    <div class="fw-bold" id="cProfileMax">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <h6 class="text-uppercase mb-2" style="color:#808080; font-weight:700; letter-spacing:0.8px; font-size:0.72rem;"><i class="bi bi-chat-left-text me-2"></i>Trainee Feedback</h6>
+                        <div id="cProfileReviews" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-end" style="background: linear-gradient(180deg, #fafafa 0%, #fff 100%); border-radius: 0 0 18px 18px;">
+                    <button type="button" class="btn px-4" style="background: #000; color: #FFD700; border-radius: 10px;" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script src="js/staff.js?v=5"></script>
+<script>
+window.submitEditRfidForm = function() {
+    console.log('[RFID SAVE] submitEditRfidForm CALLED');
+    var midEl = document.getElementById('editRfidMemberId');
+    var newEl = document.getElementById('editRfidNew');
+    if (!midEl || !newEl) { console.error('[RFID SAVE] Elements missing'); showAlert('Error', 'Form elements not found. Please refresh the page.', 'danger'); return; }
+    var member_id = midEl.value;
+    var new_rfid = newEl.value.trim().toUpperCase();
+    console.log('[RFID SAVE] member_id=', member_id, 'new_rfid=', new_rfid);
+    if (!new_rfid) {
+        showAlert('Required Field', 'Please enter or scan a new RFID code', 'warning');
+        newEl.focus();
+        return;
+    }
+    if (!member_id) {
+        showAlert('Error', 'Member not found. Close the modal and try again.', 'danger');
+        return;
+    }
+    fetch('../api.php?action=update_rfid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ member_id: member_id, new_rfid: new_rfid })
+    }).then(function(r) {
+        console.log('[RFID SAVE] response HTTP status=', r.status);
+        return r.text().then(function(t) {
+            console.log('[RFID SAVE] raw body (len=' + t.length + '): |' + t + '|');
+            var parsed = null;
+            try { parsed = JSON.parse(t); }
+            catch(e) { parsed = { status: 'error', message: 'Invalid server response. HTTP '+r.status+', body len='+t.length+': ' + (t ? t.substring(0,120) : '(EMPTY)') }; }
+            return parsed;
+        });
+    }).then(function(result) {
+        console.log('[RFID SAVE] final result=', result);
+        if (result.status === 'success') {
+            showAlert('RFID Updated', result.message || 'RFID updated successfully!', 'success');
+            try {
+                var m = bootstrap.Modal.getInstance(document.getElementById('editRfidModal'));
+                if (m) m.hide();
+            } catch(e) {}
+            if (typeof loadData === 'function') loadData();
+        } else {
+            showAlert('Save Failed', result.message || 'Unknown error while saving RFID', 'danger');
+        }
+    }).catch(function(err) {
+        console.error('[RFID SAVE] network error:', err);
+        showAlert('Network Error', 'Network / Server error: ' + (err && err.message ? err.message : err), 'danger');
+    });
+};
+document.addEventListener('DOMContentLoaded', function() {
+    var ri = document.getElementById('editRfidNew');
+    if (ri) ri.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); submitEditRfidForm(); } });
+});
+</script>
+</body>
+</html>

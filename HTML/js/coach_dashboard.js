@@ -13,7 +13,7 @@ let newPhotoFiles = [];         // [File, ...]
 async function loadData(tid = '') {
     const res = await fetch(`../api.php?action=get_coach_data&trainee_id=${tid}`);
     if (res.status === 403) {
-        window.location.href = '../login/Login.html';
+        window.location.href = '../index.html';
         return;
     }
     
@@ -841,7 +841,7 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
 document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     await fetch('../api.php?action=logout');
-    window.location.href = '../login/Login.html';
+    window.location.href = '../index.html';
 });
 
 loadData();

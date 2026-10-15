@@ -9,7 +9,7 @@ let myCoach = null;
 
 async function loadData() {
     const res = await fetch('../api.php?action=get_member_data');
-    if (res.status === 403) { window.location.href = '../login/Login.html'; return; }
+    if (res.status === 403) { window.location.href = '../index.html'; return; }
     const data = await res.json();
     if (data.status === 'success') {
         const user = data.user;
@@ -646,7 +646,7 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
 document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     await fetch('../api.php?action=logout');
-    window.location.href = '../login/Login.html';
+    window.location.href = '../index.html';
 });
 
 loadData();

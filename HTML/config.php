@@ -321,6 +321,25 @@ try {
         error_log("email_notifications_sent migration skipped: " . $e->getMessage());
     }
 
+    // Auto-migration: login_attempts table for staff/admin login rate limiting
+    try {
+        $checkLoginAttempts = $pdo->query("SHOW TABLES LIKE 'login_attempts'")->fetch();
+        if (!$checkLoginAttempts) {
+            $pdo->exec("CREATE TABLE login_attempts (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(100) NOT NULL,
+                ip_address VARCHAR(45) NOT NULL,
+                attempts INT NOT NULL DEFAULT 0,
+                last_attempt DATETIME NULL,
+                locked_until DATETIME NULL,
+                UNIQUE KEY uniq_user_ip (username, ip_address),
+                INDEX idx_locked_until (locked_until)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        }
+    } catch (Exception $e) {
+        error_log("login_attempts migration skipped: " . $e->getMessage());
+    }
+
     // Auto-generate cron secret key if not exists (individually hardened)
     try {
         $cronKeyStmt = $pdo->prepare("SELECT settings_value FROM system_settings WHERE settings_key = 'cron_secret_key' LIMIT 1");

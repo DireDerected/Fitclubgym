@@ -12,7 +12,7 @@ async function loadData() {
             fetch('../api.php?action=get_all_reports')
         ]);
         
-        if (adminRes.status === 403) { window.location.href = '../login/Login.html'; return; }
+        if (adminRes.status === 403) { window.location.href = '../index.html'; return; }
         
         const adminData = await adminRes.json();
         const staffListData = await staffListRes.json();
@@ -416,14 +416,6 @@ function renderStaffTable(staff) {
                     ${s.status}
                 </span>
             </td>
-            <td>
-                <div class="password-cell">
-                    <code id="passCode-${s.id}" class="text-muted small password-visible" style="max-width: 100px;">${s.password ? '••••••••' : 'None'}</code>
-                    <button class="password-toggle-btn" onclick="togglePassword('${s.id}', '${s.password || ''}')" title="Toggle Password">
-                        <i id="passIcon-${s.id}" class="bi bi-eye"></i>
-                    </button>
-                </div>
-            </td>
             <td>${new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
             <td>
                 ${s.role !== 'Admin' ? `
@@ -473,24 +465,6 @@ function validatePassword(pass) {
     if (!hasSpecial) return "Password must contain at least one special character.";
     if (!hasNumber) return "Password must contain at least one number.";
     return true;
-}
-
-let passwordVisibleStates = {};
-
-function togglePassword(id, actualPassword) {
-    const codeEl = document.getElementById(`passCode-${id}`);
-    const iconEl = document.getElementById(`passIcon-${id}`);
-    if (!codeEl || !iconEl) return;
-    
-    if (!passwordVisibleStates[id]) {
-        codeEl.textContent = actualPassword;
-        iconEl.className = 'bi bi-eye-slash';
-        passwordVisibleStates[id] = true;
-    } else {
-        codeEl.textContent = '••••••••';
-        iconEl.className = 'bi bi-eye';
-        passwordVisibleStates[id] = false;
-    }
 }
 
 let confirmModal;
@@ -740,7 +714,7 @@ async function toggleStatus(id, newStatus) {
 document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     await fetch('../api.php?action=logout');
-    window.location.href = '../login/Login.html';
+    window.location.href = '../index.html';
 });
 
 function updateClock() {

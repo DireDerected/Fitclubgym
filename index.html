@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Fitclub Gym • Access Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --sidebar-black: #111111;
+            --header-gray: #F5F5F5;
+            --text-dark: #333333;
+        }
+
+        body { 
+            background: #FFFFFF; 
+            height: 100vh; 
+            margin: 0; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Redesign */
+        .login-header {
+            background: var(--header-gray);
+            height: 70px;
+            padding: 0 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--primary-yellow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-brand img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #000;
+            border: 2px solid var(--primary-yellow);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        /* Center Tab Buttons */
+        .login-tabs {
+            display: flex;
+            background: #EAEAEA;
+            padding: 4px;
+            border-radius: 12px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn.active {
+            background: #FFF;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        #clock {
+            font-weight: 700;
+            color: #333;
+            font-size: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            background: #FFF;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #DDD;
+        }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            align-items: center;
+            padding: 0 5%;
+            gap: 5%;
+            background: linear-gradient(135deg, #FFF 0%, #F9F9F9 100%);
+        }
+
+        /* Left Side: Bodybuilder Image */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .image-container img {
+            max-width: 90%;
+            max-height: 80vh;
+            filter: drop-shadow(20px 20px 30px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Right Side: Login Form */
+        .login-form-container {
+            background: #FFF;
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeInRight 0.8s ease-out;
+            position: relative;
+        }
+
+        .login-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-yellow);
+            border-radius: 0 0 10px 10px;
+        }
+
+        .form-title {
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+
+        .form-subtitle {
+            color: #777;
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #EEE;
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-yellow);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+        }
+
+        .btn-login {
+            background: #000;
+            color: var(--primary-yellow);
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .rfid-icon {
+            font-size: 5rem;
+            color: var(--primary-yellow);
+            background: #000;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .rfid-input-field {
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 4px;
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        #statusMessage {
+            position: fixed;
+            top: 90px;
+            right: 2.5rem;
+            z-index: 1000;
+            min-width: 300px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+            }
+            .image-container { display: none; }
+            .login-header { padding: 0 1rem; }
+            .navbar-brand span { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Alert System -->
+    <div id="statusMessage" class="alert alert-dismissible fade show" role="alert">
+        <span id="messageContent"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header Section -->
+    <header class="login-header">
+        <div class="navbar-brand">
+            <img src="Fitclubgymicon.png" alt="Fitclub Gym Logo" onerror="this.style.display='none';">
+            <span>Fitclub Gym</span>
+        </div>
+
+        <div class="login-tabs">
+            <button class="tab-btn active" id="staffTab">STAFF & ADMIN</button>
+            <button class="tab-btn" id="memberTab">MEMBER & COACH</button>
+        </div>
+
+        <span id="clock">00:00:00</span>
+    </header>
+
+    <!-- Main Section -->
+    <main class="main-container">
+        <!-- Left Column: Bodybuilder Image -->
+        <div class="image-container">
+            <img src="BodyBuild.png" alt="Bodybuilding Motivation" id="bodyBuildImg" style="cursor: pointer;">
+            <!-- Fun Fact Modal -->
+            <div class="modal fade" id="funFactModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">💪 Gym Fun Fact</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center" id="funFactContent">
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Login Forms -->
+        <div class="login-form-container">
+            <!-- Staff Form -->
+            <div id="staffLoginForm">
+                <h2 class="form-title">Welcome Back</h2>
+                <p class="form-subtitle">Enter your administrative credentials to continue.</p>
+                <form id="staffForm">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="e.g. admin" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-login">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Access Dashboard
+                    </button>
+                </form>
+            </div>
+
+            <!-- Member Form -->
+            <div id="memberLoginForm" style="display: none;">
+                <h2 class="form-title text-center">RFID Login</h2>
+                <p class="form-subtitle text-center">Scan your gym card or enter your unique UID.</p>
+                
+                <div class="text-center">
+                    <div class="rfid-icon">
+                        <i class="bi bi-upc-scan"></i>
+                    </div>
+                    
+                    <form id="rfidForm">
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <input type="text" id="rfidInput" class="form-control rfid-input-field" 
+                                       placeholder="XXXXXXXX" autofocus autocomplete="off" required>
+                                <button type="button" id="loginUsbConnectBtn" class="btn btn-dark" title="Connect USB RFID Reader">
+                                    <i class="bi bi-usb-symbol"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-login" id="submitBtn">
+                            <i class="bi bi-cpu me-2"></i>Verify Identity
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-5 text-center">
+                <small class="text-muted">
+                    <a href="#" class="text-dark fw-bold text-decoration-none" id="forgotPasswordBtn">Forgot Password / Reset Password</a>
+                </small>
+            </div>
+
+            <!-- Forgot Password Modal (Step 1: Enter Username) -->
+            <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Recover Account</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted small mb-4">Enter your account username. You will then be asked to verify your chosen security question to set a new password.</p>
+                            <form id="forgotPasswordForm">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Username</label>
+                                    <input type="text" id="resetUsername" class="form-control" required placeholder="Enter your username">
+                                </div>
+                                <button type="submit" class="btn btn-login w-100"><i class="bi bi-shield-lock me-2"></i>Verify Account</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Question Verification & New Password Modal -->
+            <div class="modal fade" id="verifyPasswordModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-shield-check me-2"></i>Answer Security Question &amp; New Password</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center mb-4">
+                                <span class="fw-bold text-primary" id="secResetUser">—</span>
+                                <div class="small text-muted mt-1">Answer the security question below correctly to continue.</div>
+                            </div>
+                            <form id="verifyPasswordForm">
+                                <input type="hidden" id="secResetUserId">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted text-uppercase" id="secResetQuestionLabel">Security Question</label>
+                                    <input type="text" id="secResetAnswer" class="form-control" required placeholder="Enter your answer">
+                                </div>
+                                <hr class="my-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">New Password</label>
+                                    <input type="password" id="secNewPass" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted text-uppercase">Confirm New Password</label>
+                                    <input type="password" id="secNewPassConfirm" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-login w-100"><i class="bi bi-key me-2"></i>Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="index.js?v=7"></script>
+</body>
+</html>
